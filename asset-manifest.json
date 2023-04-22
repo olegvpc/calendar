@@ -1,0 +1,27 @@
+{
+  "files": {
+    "main.css": "/calendar/static/css/main.636d160d.css",
+    "main.js": "/calendar/static/js/main.6c059416.js",
+    "static/js/787.f4b9e84d.chunk.js": "/calendar/static/js/787.f4b9e84d.chunk.js",
+    "static/media/Inter-Black.ttf": "/calendar/static/media/Inter-Black.5bc9c4d5770576fe98af.ttf",
+    "static/media/Inter-Medium.ttf": "/calendar/static/media/Inter-Medium.9cbff87dc577185b8630.ttf",
+    "static/media/Inter-Regular.ttf": "/calendar/static/media/Inter-Regular.96ce55e3ba0d6a209090.ttf",
+    "static/media/Inter-Medium.otf": "/calendar/static/media/Inter-Medium.16eda82a3c37a6edda09.otf",
+    "static/media/Inter-Black.otf": "/calendar/static/media/Inter-Black.b2a2b192860f79c0b89c.otf",
+    "static/media/Inter-Black.woff": "/calendar/static/media/Inter-Black.fd37f7e052bea1018058.woff",
+    "static/media/Inter-Regular.otf": "/calendar/static/media/Inter-Regular.a416f4674fad5f019461.otf",
+    "static/media/Inter-Regular.woff": "/calendar/static/media/Inter-Regular.34ed58565339f4f3be40.woff",
+    "static/media/Inter-Black.woff2": "/calendar/static/media/Inter-Black.141c7af6ed109b318513.woff2",
+    "static/media/Inter-Medium.woff2": "/calendar/static/media/Inter-Medium.6db7e439cc4b0e5c0cd2.woff2",
+    "static/media/Inter-Regular.woff2": "/calendar/static/media/Inter-Regular.4c96ed73beaf6d1e6cc7.woff2",
+    "static/media/Inter-Medium.woff": "/calendar/static/media/Inter-Medium.9053572c46aeb4b16caa.woff",
+    "index.html": "/calendar/index.html",
+    "main.636d160d.css.map": "/calendar/static/css/main.636d160d.css.map",
+    "main.6c059416.js.map": "/calendar/static/js/main.6c059416.js.map",
+    "787.f4b9e84d.chunk.js.map": "/calendar/static/js/787.f4b9e84d.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.636d160d.css",
+    "static/js/main.6c059416.js"
+  ]
+}
