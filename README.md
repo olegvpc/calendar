@@ -19,3 +19,5 @@ https://facebook.github.io/create-react-app/
 
 styled-components:
 https://medium.com/styled-components/styled-components-getting-started-c9818acbcbbd
+
+https://www.youtube.com/watch?v=cNUTCKq-_-Y

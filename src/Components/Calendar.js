@@ -145,32 +145,6 @@ const Hour = styled.div`
         `}
 `;
 
-// const Body = styled.div`
-//   width: 100%;
-//   display: flex;
-//   flex-wrap: wrap;
-// `;
-// const Day = styled.div`
-//   width: 14.2%;
-//   height: 40px;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   cursor: pointer;
-//
-//   ${(props) =>
-//     props.isToday &&
-//     css`
-//       border: 1px solid #eee;
-//     `}
-//
-//   ${(props) =>
-//     props.isSelected &&
-//     css`
-//       background-color: #eee;
-//     `}
-// `;
-
 export function Calendar() {
   const DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   const DAYS_LEAP = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -179,35 +153,52 @@ export function Calendar() {
   const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 
-  const today = new Date();
-  const [date, setDate] = useState(today);
-  const [day, setDay] = useState(date.getDate());
-  const [month, setMonth] = useState(date.getMonth());
-  const [year, setYear] = useState(date.getFullYear());
+  const today = new Date(); // всегда сегодня
+  const [date, setDate] = useState(today); // дата в формате Date
+  // eslint-disable-next-line
+  const [day, setDay] = useState(today.getDay());
+  const [month, setMonth] = useState(today.getMonth());
+  const [year, setYear] = useState(today.getFullYear());
   const days = isLeapYear(year) ? DAYS_LEAP : DAYS;
 
-  const [startDay, setStartDay] = useState(getStartDayOfMonth(date));
-  const [monthArray, setMonthArray] = useState(getMonthArray(days))
-  const [indexOfCurrentWeek, setIndexOfCurrentWeek] = useState(getIndexCurrentWeek(day))
+  const [monthArray, setMonthArray] = useState([])
+  const [indexOfCurrentWeek, setIndexOfCurrentWeek] = useState(getIndexCurrentWeek(today))
+
 
   const [allEventsDayTime, setAllEventsDayTime] = useState([])
   const [isSelectedEvent, setIsSelectedEvent] = useState(false)
   const [eventForDelete, setEventForDelete] = useState([])
 
+  const [isToday, setIsToday] = useState(false)
+
+  const todayWeek = getIndexCurrentWeek(today)
+  // console.log("real count week", today, todayWeek)
 
   useEffect(()=>{
     localStorage.setItem("schedule", JSON.stringify({2023:{'01':{1:[]},
         '02':{1:[]},'03':{1:[]}, '04':{1:[]}, '05':{1:[]}, '06':{1:[]},
       '07':{1:[]},'08':{1:[]}, '09':{1:[]}, '10':{1:[]}, '11':{1:[]}, '12':{1:[]},}}));
+    setIsToday(true)
   },[])
+
+  useEffect(()=> {
+    if(isToday) {
+      setDate(today);
+      setDay(today.getDate());
+      setMonth(today.getMonth());
+      setYear(today.getFullYear());
+      setMonthArray(()=> getMonthArray(today));
+      setIndexOfCurrentWeek(todayWeek);
+      // console.log(today.getDate(), indexOfCurrentWeek)
+    }
+    // eslint-disable-next-line
+  },[isToday])
 
   useEffect(() => {
     setDay(date.getDate());
     setMonth(date.getMonth());
     setYear(date.getFullYear());
-    setStartDay(getStartDayOfMonth(date));
-    setMonthArray(getMonthArray(days));
-    // setIndexOfCurrentWeek(getIndexCurrentWeek())
+    setMonthArray(()=> getMonthArray(date));
     // eslint-disable-next-line
   }, [date, month]);
 
@@ -253,10 +244,12 @@ export function Calendar() {
     const startDate = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
     return startDate === 0 ? 7 : startDate;
   }
-  function getMonthArray(days) {
-    const monthArr = Array(days[month] + (startDay - 1))
+
+  function getMonthArray(incomDate) {
+    const startedDay = getStartDayOfMonth(incomDate)
+    const monthArr = Array(days[incomDate.getMonth()] + (startedDay - 1))
     .fill(null)
-    .map((_, index) => {const d = index - (startDay - 2); return d > 0 ? d : ''})
+    .map((_, index) => {const d = index - (startedDay - 2); return d > 0 ? d : ''})
     let monthWeekArr = [];
     for (let i = 0; i <Math.ceil(monthArr.length/7); i++){
     monthWeekArr[i] = monthArr.slice((i*7), (i*7) + 7);
@@ -274,15 +267,19 @@ export function Calendar() {
   }
 
   // console.log(monthArray.find((item)=> item.find((elem)=> elem === day)), day)
-  function getIndexCurrentWeek (day) {
+  function getIndexCurrentWeek (incomDate) {
+    const day = incomDate.getDate()
+    const monthArrayCurrent = getMonthArray(incomDate)
     let indexCurrentWeek = NaN
-    monthArray.forEach((item, index)=>{
+    monthArrayCurrent.forEach((item, index)=>{
       if(item.find((elem)=> elem === day)){
         indexCurrentWeek = index
       }
     })
+    // console.log(incomDate, monthArrayCurrent, day, indexCurrentWeek)
     return indexCurrentWeek
   }
+
   function handleAddEvent() {
     const dateEventString = prompt('Enter event time:', '2023-04-21 12:00:00');
     try {
@@ -359,7 +356,7 @@ export function Calendar() {
                 key={index}
                 isDate={true}
                 // eslint-disable-next-line
-                isToday={addNullToDate(d) == today.getDate() && month == today.getMonth()}
+                isToday={addNullToDate(d) == today.getDate() && month == today.getMonth() && year == today.getFullYear()}
               >
               {d}
               </DaysTitle>
@@ -369,13 +366,14 @@ export function Calendar() {
 
         <DaysItem>
           <Button onClick={() => {
-            if((indexOfCurrentWeek - 1) < 0) {
-              setDate(new Date(year, month - 1, 1))
-              const indexOfLastWeek = monthArray.length -1
-              setIndexOfCurrentWeek(indexOfLastWeek)
-              // console.log(indexOfLastWeek)
-            }
-            if((indexOfCurrentWeek - 1) >= 0) {
+            setIsToday(false)
+            if((indexOfCurrentWeek) === 0) {
+              setDate(()=> new Date(year, month - 1, 1))
+              const prevMonth = getMonthArray(new Date(year, month - 1, 1))
+              const indexOfLastWeek = prevMonth.length -1
+              setIndexOfCurrentWeek(()=> indexOfLastWeek)
+              // console.log('last element', indexOfLastWeek)
+            } else if((indexOfCurrentWeek) > 0) {
               setIndexOfCurrentWeek((prev)=> prev - 1)
             }
 
@@ -385,8 +383,9 @@ export function Calendar() {
             {MONTHS[month]} {year}
           </div>
           <Button onClick={() => {
+            setIsToday(false)
             if ((indexOfCurrentWeek + 1) < monthArray.length) {
-              return setIndexOfCurrentWeek((prev)=> prev + 1)
+              setIndexOfCurrentWeek((prev)=> prev + 1)
             }
             if((indexOfCurrentWeek + 1) === monthArray.length){
               // console.log("the last week of month");
@@ -399,6 +398,8 @@ export function Calendar() {
           >&gt;</Button>
         </DaysItem>
       </DaysContainer>
+      {/*<p style={{ color: 'blue', fontSize: '15px'}}>{day}-{month}-{year}-{indexOfCurrentWeek} -{isToday? "yes": "no"}</p>*/}
+      {/*<p style={{ color: 'blue', fontSize: '15px'}}>monthArray: {JSON.stringify(monthArray)}</p>*/}
 
       <Schedule>
         {/*<p>{year} - {month}- {JSON.stringify(monthArray[indexOfCurrentWeek])}</p>*/}
@@ -459,17 +460,17 @@ export function Calendar() {
 
       <Footer>
         <ButtonToday onClick={() => {
-          setDate(today);
-          setIndexOfCurrentWeek(()=> getIndexCurrentWeek(today.getDate()))
-          // console.log(today, today.getDate(), indexOfCurrentWeek)
+          setIsToday(true)
         }
-        }>Today</ButtonToday>
+        }>Today
+        </ButtonToday>
         <ButtonDelete
           isSelected={isSelectedEvent}
           onClick={() => {
           handleDeleteEvent()
         }
-        }>Delete</ButtonDelete>
+        }>Delete
+        </ButtonDelete>
       </Footer>
     </>
   );
